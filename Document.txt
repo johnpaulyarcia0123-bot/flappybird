@@ -1,0 +1,519 @@
+FLAPPY BIRD GAME WITH LOGIN SYSTEM
+1. DESCRIPTION
+Java Swing application that simulates the Flappy Bird game with Login Authentication.
+The user must login first with admin credentials before accessing the game.
+The player controls a bird by pressing SPACE to fly and avoid pipes.
+The game features gravity physics, collision detection, score system, highscore, and difficulty settings.
+Uses Object-Oriented Programming and Timer for 60 FPS game loop.
+
+
+2. SYSTEM ARCHITECTURE / FOLDER STRUCTURE
+javascript
+src/
+├── Login.java // Login Window + Authentication
+├── App.java // Game Window Launcher
+├── FlappyBird.java // Main Game Panel + Logic
+└── resources/
+    ├── flappybirdbg.png
+    ├── flappybird.png
+    ├── toppipe.png
+    └── bottompipe.png
+
+
+3. OBJECT-ORIENTED ANALYSIS AND DESIGN
+A. Classes
+Class
+Description
+Login
+Handles login GUI. Authenticates user before starting game
+App
+Creates JFrame and initializes the FlappyBird game panel
+FlappyBird
+Main JPanel. Handles game loop, drawing, input, and all logic
+Bird
+Inner class. Player object with position and image
+Pipe
+Inner class. Obstacle object with position and collision box
+B. Class Attributes and Methods
+Class Name: Login
+Attributes: userField, passField, loginBtn
+Methods: Login(), actionPerformed(ActionEvent e)
+Class Name: App
+Attributes: boardWidth, boardHeight
+Methods: App()
+Class Name: FlappyBird
+Attributes: bird, pipes, velocityX, velocityY, gravity, score, highScore
+Methods: FlappyBird(), placePipes(), move(), draw(Graphics g), collision(), actionPerformed(), keyPressed()
+Class Name: Bird
+Attributes: x, y, width, height, img
+Methods: Bird(Image img)
+Class Name: Pipe
+Attributes: x, y, width, height, img, passed
+Methods: Pipe(Image img)
+
+
+4. APPLICATION OF THE FOUR PILLARS OF OOP
+Encapsulation: All attributes in Login, Bird, and Pipe are accessed only within their class. userField and passField are private to login. Data hiding is applied.
+Inheritance: Login extends JFrame. FlappyBird extends JPanel and implements ActionListener, KeyListener.
+Polymorphism: actionPerformed() is overridden in both Login and FlappyBird but performs different actions. paintComponent() and keyPressed() are also overridden.
+Abstraction: Complex game logic is hidden in methods like move(), placePipes(), collision(). The user only interacts with simple controls like SPACE and S.
+
+
+5. VALIDATIONS / GAME MECHANICS
+Login Validation:
+Username - Must be "admin"
+Password - Must be "1234"
+Success - Shows "Welcome" message and opens Game
+Failed - Shows "Wrong Password or Username! Try Again"
+Game Mechanics:
+Gravity - Default 1. Can change to 2 or 3 in Settings
+Jump - On SPACE press, velocityY = -9
+Pipe Spawning - New pipes every 1500ms with random Y
+Pipe Movement - Pipes move left at speed -4
+Collision - Rectangle collision. Game over if bird hits pipe or ground
+Score - +0.5 per pipe passed. 2 pipes = 1 point
+Highscore - static int highScore saves record after restart
+
+
+6. CONTROLS
+Key
+Action
+SPACE
+Jump / Flap / Restart Game
+S
+Open/Close Settings Menu
+1
+Normal Difficulty - Gravity = 1
+2
+Hard Difficulty - Gravity = 2
+3
+INSANE Difficulty - Gravity = 3
+
+
+7. HOW TO RUN THE PROGRAM
+Step 1: Put all .png images in the same folder as .java files
+Step 2: Compile all files
+bash
+javac Login.java App.java FlappyBird.java
+Step 3: Run the Program
+bash
+java Login
+Step 4: Login Credentials
+Username: admin
+Password: 1234
+
+
+8. SYSTEM FEATURES WITH SCREENSHOTS
+No.
+Feature
+Description
+1
+Login Form
+Window for username and password input
+2
+Success Login
+Welcome message and game starts
+3
+Gameplay
+Bird flying between pipes with live score
+4
+Settings Menu
+Press S to change difficulty
+5
+Game Over
+Shows final score and "Press SPACE to Restart"
+
+
+9. CONCLUSION
+The Flappy Bird game with Login was successfully developed using Java Swing.
+The system applies the 4 OOP concepts: Encapsulation, Inheritance, Polymorphism, and Abstraction.
+Features like user authentication, game physics, collision detection, and settings menu were implemented.
+This project demonstrates how to build an interactive 2D game with GUI and real-time input handling in Java.
+
+
+10. APPENDIX: SOURCE CODE
+Login.java
+import javax.swing.*; // PARA SAAN: Library para sa mga Window, Button, Textbox. PAANO: I-import para magamit
+import java.awt.*; // PARA SAAN: Library para sa Font, Color, Size. PAANO: I-import para magamit  
+import java.awt.event.*; // PARA SAAN: Library para sa Button Click. PAANO: I-import para sa ActionListener
+
+// CLASS: Login 
+// para san ? Ito yung unang window na lalabas. Dito mag lo-login muna bago makapasok sa game
+// pano nagana ? sa JFrame para maging window, at ActionListener para ma read niya lahat ng itatype mo.
+public class Login extends JFrame implements ActionListener { 
+    
+    //gagawa tayo ng variables at components para sa login window. Yung mga ito ay gagamitin natin sa constructor at actionPerformed method
+    JTextField userField; // dito gagawa tayo ng pag lalagyan ng username
+    JPasswordField passField; // dito is password
+    JButton loginBtn; // dito gagawa tayo ng pindutan para mag "Start"
+
+    // dito gagawa tayo ng constructor at actionPerformed method. Constructor para sa setup ng window, actionPerformed para sa brain pag pinindot yung button
+    // onetime setup lang to. Dito binibuo yung itsura ng login form
+    //tumatawag lang to ng isang beses pag 'new Login()' sa main method
+    public Login() { 
+        setTitle("Flappy Bird - Login First"); // gagawa tayo ng tittle
+        setSize(350, 250); 
+        setLocationRelativeTo(null); // ito para nasagitna ng screen naka null para center
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close yung window pag pinindot yung X button
+        setLayout(null); // para tayo mag set ng position ng mga components natin manually
+
+        // gagawa tayo ng label tittle
+        JLabel title = new JLabel("LOGIN FORM :) "); // tittle
+        title.setFont(new Font("Arial", Font.BOLD, 18)); // palakihin natin yung font
+        title.setBounds(80, 20, 200, 30); // pwesto at sukat naman dito 
+        add(title); // ilagay natin sa window.
+
+        //gagawa tayo ng label at textfield para sa username at password, at button para sa login
+        JLabel userLabel = new JLabel("Username:"); // label
+        userLabel.setBounds(30, 70, 80, 25); // ito sa pwestuhan
+        add(userLabel);
+
+        //gagawa tayo ng textfield para sa username input
+        userField = new JTextField(); 
+        userField.setBounds(120, 70, 180, 25); 
+        add(userField);
+
+        // dito naman gagawa tayo ng label at password field para sa password input
+        JLabel passLabel = new JLabel("Password:");
+        passLabel.setBounds(30, 110, 80, 25);
+        add(passLabel);
+
+        //gagawa tayo ng password field para sa password input
+        passField = new JPasswordField(); 
+        passField.setBounds(120, 110, 180, 25);
+        add(passField);
+
+        // gagawa tayo ng button para sa login dito sa part na to
+        loginBtn = new JButton("Start"); 
+        loginBtn.setBounds(120, 150, 100, 30); 
+        loginBtn.addActionListener(this);
+        add(loginBtn);
+
+        setVisible(true); // para makita yung window natin
+    } 
+
+
+    // dito gagawa tayo ng method na actionPerformed para sa button click. Dito natin ilalagay yung logic kung ano gagawin pag pinindot yung button 
+    @Override 
+    public void actionPerformed(ActionEvent e) { 
+        String username = userField.getText(); // kunin muna natin yung laman ng username.
+        String password = String.valueOf(passField.getPassword()); // kunin natin yung laman ng password. Ginamit natin String.
+
+        // ito yung logic para sa login. Dito natin icheck kung tama yung username at password.
+        // if tama, magpapakita ng success message at bubuksan yung game window. Kung mali, magpapakita ng error message pare koy!
+        if(username.equals("admin") && password.equals("1234")) { 
+            JOptionPane.showMessageDialog(this, "Correct! Welcome " + username); // Pop up success message naturo nato ni sir rjay dapat alam niyo na to
+            dispose(); // login window is closed.
+            new App(); // mag bubukas ng bagong window para sa game. Dito na papasok yung game.
+        } else { 
+            JOptionPane.showMessageDialog(this, "Wrong Password or Username! Try Again"); // PARA SAAN: Pop-up error
+        } 
+    } 
+
+
+// dito gagawa tayo ng main method para sa login window. Dito natin tatawagin yung constructor para magpakita ng login window
+    public static void main(String[] args) { 
+        new Login();
+    } 
+}
+
+
+App.java
+import javax.swing.*;
+
+public class App {
+    // TINANGGAL NA YUNG MAIN DITO PRE
+    // Ginawa ko nalang constructor para matawag sya sa Login
+
+    public App() { // constructor nalang
+        int boardWidth = 360;
+        int boardHeight = 640;
+
+        JFrame frame = new JFrame("Flappy Bird");
+        frame.setSize(boardWidth, boardHeight);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        FlappyBird flappyBird = new FlappyBird();
+        frame.add(flappyBird);
+
+        frame.pack();
+        flappyBird.requestFocus();
+        frame.setVisible(true);
+    }
+}
+
+FlappyBird.java
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Random;
+import javax.swing.*;
+
+// FlappyBird Ito yung pinaka game main panel
+public class FlappyBird extends JPanel implements ActionListener, KeyListener { // gagawa tayo ng width ng height ng Window
+    int boardWidth = 360;
+    int boardHeight = 640;
+
+    // dito naman gagawa tayo ng VARIABLES and ATTRIBUTES 
+    Image backgroundImg;
+    Image birdImg;
+    Image topPipeImg;
+    Image bottomPipeImg;
+
+    // dito gagawa tayo ng bird position and size
+    int birdX = boardWidth/8; // X position ng bird nasa kaliwa
+    int birdY = boardHeight/2; // Y position ng bird nasa gitna
+    int birdWidth = 34;
+    int birdHeight = 24;
+
+    //dito gagawa tayo ng inner class ng bird. para naka encapsulate yung properties ng bird
+    class Bird {
+        int x = birdX;
+        int y = birdY;
+        int width = birdWidth;
+        int height = birdHeight;
+        Image img;
+        // gagawa tayo ng constructor
+        Bird(Image img) { this.img = img; }
+    }
+
+    // dito naman is yung pipe size
+    int pipeX = boardWidth; // dito mag sisimula yung pipe sa kanan
+    int pipeY = 0;
+    int pipeWidth = 64;
+    int pipeHeight = 512;
+
+    //gagawa ulit tayo ng inner class para sa pipe para naka encapsulate yung properties ng pipe
+    class Pipe {
+        int x = pipeX;
+        int y = pipeY;
+        int width = pipeWidth;
+        int height = pipeHeight;
+        Image img;
+        boolean passed = false; // dito para malaman mo kung naka score
+        
+        //gagawa ulit tayo ng constructor
+        Pipe(Image img) { this.img = img; }
+    }
+
+    // dito sa part na to ito yung game logic niya!
+    Bird bird;
+    int velocityX = -4; // ito yung bilis ng pipe papuntang kaliwa gets diba sa screen sa kaliwa A. mag papakita yung pipes at -4 yung bilis niya.
+    int velocityY = 0; // ito naman yung bilis ng bird taas baba.
+    int gravity = 1; // dito naka default normal para kung gusto mo baguhin nasa settings
+    ArrayList<Pipe> pipes;
+    Random random = new Random();
+    Timer gameLoop; // dito gumawa ako ng FPS 60lang
+    Timer placePipeTimer; // ito yung time para mag spawn yung pipes. papuntang kaliwa
+    boolean gameOver = false; // dito para alam mo kung patay kanang hinayupak ka boy!
+    boolean showSettings = false; //ito para sa settings
+    double score = 0; // score niya to mag uumpisa sa zero di pwedeng 100 agad kupal kaba?
+    static int highScore = 0; // dito para di mag reset kahit mag restart ka
+
+
+    //gagawa nanaman tayo ng constructor dito bakit nga ba ako gumagawa ng constructor! kasi tanga ka joke lang tol!
+    // para isetup lahat ng kelangan ng game para isang beses lang pag unang bukas ng window. gets ?
+    FlappyBird() {
+        setPreferredSize(new Dimension(boardWidth, boardHeight)); // so dito need natin mag set size
+        setFocusable(true); // dito bakit siya naka true/focusable. kasi si Jpanel is ito pre FUN FACT! HAHAHA!
+        // kasi by default yung Jpanel is Bingi. kumbaga sa TAO naka earphones shet galing ko
+        // so kelangan dapat natin sabihin kay JAVA. dapat gawin mong focusable tong panel nato
+        // para pag pinindot natin yung keyboard satin pupunta yung event! gets ?
+        addKeyListener(this);
+
+        // dito lahat ng PNG or images. 
+        backgroundImg = new ImageIcon(getClass().getResource("./flappybirdbg.png")).getImage();
+        birdImg = new ImageIcon(getClass().getResource("./flappybird.png")).getImage();
+        topPipeImg = new ImageIcon(getClass().getResource("./toppipe.png")).getImage();
+        bottomPipeImg = new ImageIcon(getClass().getResource("./bottompipe.png")).getImage();
+
+        bird = new Bird(birdImg); // gagawa tayo ng bird object. parang blue print lang to kaya ako gumawa ng object! TEMPLATE pre. tagalog na yan
+        // wala pang plano kaya plaplanuhin palang natin.
+        pipes = new ArrayList<Pipe>();
+
+        //dito ako mag sstart! 
+        // Maglalagay tayo ng bagong pipe kada 1500ms
+        placePipeTimer = new Timer(1500, e -> placePipes());
+        placePipeTimer.start();
+        
+        // kelangan mag loop GAME LOOP tumatakbo 60 times per second
+        gameLoop = new Timer(1000/60, this); 
+        gameLoop.start(); 
+    } 
+
+    // ito yung method para makalgay tayo ng 2 pipes sa taas at baba di naman pwedeng full straight diba tol okay kalang?
+    void placePipes() { 
+        int randomPipeY = (int) (pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2)); // Random Y
+        int openingSpace = boardHeight/4; //dito yung laki ng butas ng pwet mo ay! gitna pala Laki ng butas sa gitna
+        
+        Pipe topPipe = new Pipe(topPipeImg);
+        topPipe.y = randomPipeY;
+        pipes.add(topPipe);
+        
+        Pipe bottomPipe = new Pipe(bottomPipeImg);
+        bottomPipe.y = topPipe.y + pipeHeight + openingSpace; 
+        pipes.add(bottomPipe); 
+    } 
+
+    //metod ulit para mag drawing ng screen! 
+    public void paintComponent(Graphics g) { 
+        super.paintComponent(g); 
+        draw(g); 
+    } 
+
+    // so lahat ng idodrawing natin is adnito
+    public void draw(Graphics g) { 
+        g.drawImage(backgroundImg, 0, 0, this.boardWidth, this.boardHeight, null); // ito yung backround
+        g.drawImage(birdImg, bird.x, bird.y, bird.width, bird.height, null); // dito yung bird!
+        
+        // dito need natin ng code na loop ulit para sa lahat ng pipes na idodrawing
+        for (int i = 0; i < pipes.size(); i++) { 
+            Pipe pipe = pipes.get(i); 
+            g.drawImage(pipe.img, pipe.x, pipe.y, pipe.width, pipe.height, null); 
+        } 
+        
+        // dito is mag draw tayo ulit ng scire at highscore
+        g.setColor(Color.white); 
+        g.setFont(new Font("Arial", Font.BOLD, 24)); 
+        g.drawString("Score: " + (int)score, 10, 35); 
+        g.drawString("Highscore: " + FlappyBird.highScore, 10, 65); // dito gagawa tayo ng static kasi hindi siya pag aari ng object!
+        //pag aari siya ng class gets ?
+        
+        // dito gagawa tayo pag nag game over
+        if (gameOver) {
+            g.setFont(new Font("Arial", Font.BOLD, 32));
+            g.drawString("GAME OVER", boardWidth/2 - 90, boardHeight/2 - 40);
+            g.setFont(new Font("Arial", Font.PLAIN, 18));
+            g.drawString("Press SPACE to Restart", boardWidth/2 - 100, boardHeight/2 - 10);
+            g.drawString("Press S for Settings", boardWidth/2 - 90, boardHeight/2 + 15);
+        }
+
+        //dito naman is gagawa tayo ng settings para sa game  SETTINGS MENU
+        if(showSettings) {
+            g.setColor(new Color(0,0,0,180)); // transparent lang para maayos
+            g.fillRect(0,0,boardWidth,boardHeight);
+            g.setColor(Color.WHITE);
+            g.setFont(new Font("Arial", Font.BOLD, 30));
+            g.drawString("SETTINGS", boardWidth/2 - 70, 100);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("1 - Normal: Gravity = 1", 50, 150);
+            g.drawString("2 - Hard: Gravity = 2", 50, 180);
+            g.drawString("3 - INSANE: Gravity = 3", 50, 210);
+            g.drawString("Press S to Close", 50, 250);
+        }
+    } 
+
+    // gagawa tayo ng method para galawin lahat ng object na kinakailangan
+    public void move() { 
+        if(showSettings) return; // dito dapat di gagalaw pag sa settings
+
+        //bird physics gravity plus movement
+        velocityY += gravity; // kelangan natin dagdagan kada frame
+        bird.y += velocityY; // dito yung galaw ng bird
+        bird.y = Math.max(bird.y, 0); // dapat dika lalagpas sa taas
+
+        //tapos dito mag loloop tayo para sa galaw ng pipes
+        for (int i = 0; i < pipes.size(); i++) { 
+            Pipe pipe = pipes.get(i); 
+            pipe.x += velocityX; // pakaliwa ulit 
+            
+
+            // copy lang natin yung nasa taas yung una nating ginawa para pag nalagpasan yung pipe score tapos dagdag lang tayo
+            // ng high score update
+            if (!pipe.passed && bird.x > pipe.x + pipe.width) { 
+                score += 0.5; // 0.5 kasi 2 pipes = 1 point
+                pipe.passed = true; //dito mag to true kapag nalagpasan yung pipe para labas sa taas yung score.
+
+                // dagdagan natin ng realtime update score
+                if((int)score > FlappyBird.highScore) { 
+                    FlappyBird.highScore = (int)score; 
+                }
+            } 
+            
+            // pag nasagi mo yung pipes game over kana tol!
+            if (collision(bird, pipe)) { 
+                gameOver = true; 
+            } 
+        } 
+        
+        // dito pag bumagsak ka game over na din syempre
+        if (bird.y > boardHeight) { 
+            gameOver = true; 
+            // dito need natin ng backup para sure na masesave yung high score
+            if((int)score > FlappyBird.highScore) { 
+                FlappyBird.highScore = (int)score; 
+            }
+        } 
+    } 
+
+    // method para saCollision Detection Rectangle formula
+    boolean collision(Bird a, Pipe b) { 
+        return a.x < b.x + b.width && 
+               a.x + a.width > b.x && 
+               a.y < b.y + b.height && 
+               a.y + a.height > b.y; 
+    } 
+
+
+    //kelangan ng override para di mag eeror kelangan kada 1/60 soconds
+    @Override 
+    public void actionPerformed(ActionEvent e) { 
+        move(); // dapat gumagalaw lahat
+        repaint(); // dapat mag redraw yung screen
+        
+        // pag nag game over na stop na yung timer
+        if (gameOver && !showSettings) { 
+            placePipeTimer.stop(); 
+            gameLoop.stop(); 
+        } 
+    } 
+
+    //kelangan natin ulit mag override para pag pinindot keyboard
+    @Override 
+    public void keyPressed(KeyEvent e) { 
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) { 
+            if(!showSettings) {
+                velocityY = -9; // Pataas yung bird
+            }
+
+            //kelangan mag restart yung game pag nag pindot tayo ng space dito ko na lagay para di magulo  
+            if (gameOver) { 
+                bird.y = birdY; // dapat bumalik sa gitna
+                velocityY = 0; 
+                pipes.clear(); // kelangan bumalik lahat ng pipes
+                gameOver = false; 
+                score = 0; // dapat mag reset yung score niya 
+                gameLoop.start(); 
+                placePipeTimer.start(); 
+            } 
+        }
+
+        // settings niya dapag pag pinindot yung S pupunta sa settings
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            showSettings = !showSettings; // dito yung on/off
+            if(showSettings) {
+                gameLoop.stop();
+                placePipeTimer.stop();
+            } else {
+                if(!gameOver) {
+                    gameLoop.start();
+                    placePipeTimer.start();
+                }
+            }
+        }
+
+        // change difficulty ng settings
+        if(showSettings) {
+            if(e.getKeyCode() == KeyEvent.VK_1) { gravity = 1; } // Normal
+            if(e.getKeyCode() == KeyEvent.VK_2) { gravity = 2; } // Hard  
+            if(e.getKeyCode() == KeyEvent.VK_3) { gravity = 3; } // Insane
+        }
+    } 
+    
+    @Override public void keyTyped(KeyEvent e) {} 
+    @Override public void keyReleased(KeyEvent e) {}  // dito di natin nagamit. kasi naka implements keylistener tayo sa taas. 
+    // pag sinabi mo namang implements keylistiner tayo sa taas. parang nag sisign ka sa kontrata na "Kailangan ko i implement Lahat ng method sa KeyListener"
+    // gets ?
+}
