@@ -192,10 +192,14 @@ public class FlappyBird extends JPanel implements ActionListener, KeyListener {
             gameLoop.stop(); // ito naman is para stop mo na din game loop
         }
     }
+// space
+   @Override
+     public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) flap();
+        // so pag pinalitan ko ng ganto yan mawawala yung space niya
+        // @Override
+        // public void keyPressed(KeyEvent e) {
 
-    @Override
-    public void keyPressed(KeyEvent e) { 
-        if (e.getKeyCode() == KeyEvent.VK_SPACE) flap(); // pag pinindot space tumalon pre
     }
     @Override public void keyTyped(KeyEvent e) {}
     @Override public void keyReleased(KeyEvent e) {}

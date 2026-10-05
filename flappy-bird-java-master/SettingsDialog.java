@@ -2,14 +2,14 @@ import java.awt.*; // ngayon pre ito para sa Color, Font
 import javax.swing.*; // ito naman is para sa JDialog, JButton, JLabel, JOptionPane
 
 // ngayon pre ito yung SettingsDialog na GUI
-// bakit kelangan to pre kasi dati pinipindot pa S tapos 1 2 3 sa keyboard ang hirap
+// bakit kelangan to pre? kasi gusto ni sir rjay may GUI na settings para sa difficulty ng game
 // ngayon pipindutin na lang na parang button sa cp
 public class SettingsDialog extends JDialog {
 
     // constructor pre pag tinawag mo new SettingsDialog bubukas yung window na maliit
     public SettingsDialog(JFrame parent, FlappyBird game) {
         super(parent, "Settings - Difficulty", true); // ito pre tawagin mo yung JDialog na may title, yung true ibig sabihin modal pag bukas to di mo magagalaw yung game hanggat di mo sinasara to
-        setSize(300, 250); // ngayon pre ito yung laki ng settings window maliit lang
+        setSize(300, 250); //
         setLocationRelativeTo(parent); // ito naman is para nasa gitna ng game pag bumukas
         setLayout(null); // ito pre manual layout tayo para hawak natin pwesto
 
