@@ -3,110 +3,117 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 public class App {
-
     public App() {
-        int boardWidth = 360; // ngayon pre ito yung lapad ng game 360 lang para sakto
-        int boardHeight = 640; // ito naman is para sa taas para makuha yung haba na 640
+        int boardWidth = 360;
+        int boardHeight = 640;
 
-        // ngayon pre gagawa tayo ng window para dun lalabas yung flappy bird
+        // GUMAWA NG WINDOW PARA SA GAME
         JFrame frame = new JFrame("Flappy Bird");
-        // DITO DATI MAY setLocationRelativeTo(null) KAYA NASA BABA YUNG GAME PAG BUKAS
-        // TANGGALIN NATIN DITO PRE KASI MAG PAPACK PA TAYO SA BABA LALAKI PA FRAME
-        frame.setResizable(false); // ito naman pre para di ma resize kasi pag na resize masisira yung game
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // ito pre para pag pinindot yung X close talaga lahat
-        frame.setLayout(new BorderLayout()); // ngayon pre gagamit tayo ng borderlayout para may gitna at baba tayo
+        frame.setResizable(false); // bawal i-resize para di masira layout ng game
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // pag pinindot X, close lahat
+        frame.setLayout(new BorderLayout()); // para may CENTER (game) at SOUTH (buttons)
 
-        // ngayon pre gagawin natin to para sa mismong game panel yung may bird at pipes
+        // GAME PANEL MISMO - DITO YUNG BIRD AT PIPES
         FlappyBird flappyBird = new FlappyBird();
 
-        // ito naman pre gagawa tayo ng menu sa taas para mukhang legit na app
-        // NEEDS NI SIR RJAY TO PRE KASI GUSTO NI SIR MAY MENU BAR NA PROFESSIONAL TINGNAN
-        JMenuBar menuBar = new JMenuBar(); // ito pre lalagyan natin ng menu
-        JMenu menu = new JMenu("Menu"); // ito yung menu na word pre pag pinindot may lalabas
-        JMenuItem settingsItem = new JMenuItem("Settings GUI"); // ito naman is para sa settings na pipindutin
-        JMenuItem logoutItem = new JMenuItem("Logout"); // ito naman is para sa logout para bumalik sa login
+        // MENU BAR - NEEDS NI SIR RJAY PARA MUKHANG PROFESSIONAL APP
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Menu");
+        JMenuItem settingsItem = new JMenuItem("Settings GUI");
+        JMenuItem logoutItem = new JMenuItem("Logout");
 
-        // ngayon pre pag pinindot yung settings bubukas yung bintana ng difficulty
+        // PAG PININDOT SETTINGS, BUBUKAS YUNG DIALOG NG DIFFICULTY
         settingsItem.addActionListener(e -> new SettingsDialog(frame, flappyBird));
 
-        // ito naman pre pag pinindot yung logout isasara natin game tapos bubuksan login ulit
-        // NEEDS NI SIR TO PRE PARA MAY LOGOUT FEATURE YUNG APP HINDI LANG CLOSE
-        logoutItem.addActionListener(e -> { 
-            frame.dispose(); // ngayon pre isasara muna natin yung game para di dumami window
-            new Login(); // ito naman is para buksan ulit yung login
+        // =================================================================
+        // DITO KUMOKONEKTA PABALIK SA LOGIN.JAVA - LOGOUT FEATURE
+        // =================================================================
+        // BAKIT KONEKTADO SA LOGIN?
+        // Kasi pag nag-logout sa game, kailangan bumalik sa login form.
+        // Hindi na kailangan ng import kasi same folder/package lang sila.
+        // FLOW: frame.dispose() = isara yung game window
+        //       new Login() = gumawa ng bagong Login object = lalabas ulit login form
+        // Ito yung reverse ng ginawa natin sa Login.java na new App()
+        // =================================================================
+        logoutItem.addActionListener(e -> {
+            frame.dispose(); // isara muna game para di dumami window
+            new Login(); // buksan ulit login - DITO KUMOKONEKTA SA LOGIN.JAVA
         });
 
-        menu.add(settingsItem); // ngayon pre ilalagay natin yung settings sa loob ng menu
-        menu.add(logoutItem); // ito naman is para malagay yung logout sa loob ng menu
-        menuBar.add(menu); // ito pre ilalagay natin yung menu sa menubar
-        frame.setJMenuBar(menuBar); // ngayon pre ilalagay natin yung menubar sa taas ng frame
+        menu.add(settingsItem);
+        menu.add(logoutItem);
+        menuBar.add(menu);
+        frame.setJMenuBar(menuBar);
 
-        // ngayon pre gagawin natin to para sa baba na may buttons puro GUI na pipindutin na lang
-        // NEEDS NI SIR RJAY TO PRE KASI AYAW NA NI SIR NG PURO KEYBOARD GUSTO NYA LAHAT MAY BUTTON NA GUI
-        // DATI PRESS S PARA SETTINGS NGAYON BUTTON NA LANG
-        JPanel bottomPanel = new JPanel(); // ito pre panel sa baba
-        bottomPanel.setLayout(new FlowLayout()); // ito naman is para sunod sunod lang yung buttons
-        bottomPanel.setBackground(Color.DARK_GRAY); // ito pre kulay dark gray para astig tingnan
+        // BOTTOM PANEL - NEEDS NI SIR RJAY NA LAHAT MAY GUI BUTTON, HINDI PURO KEYBOARD
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout()); // sunod-sunod lang buttons
+        bottomPanel.setBackground(Color.DARK_GRAY);
 
-        JButton flapBtn = new JButton("FLAP (SPACE)"); // ngayon pre gagawa tayo ng button na pang flap
-        flapBtn.setBackground(Color.YELLOW); // ito naman is para sa kulay yellow para kita agad
+        JButton flapBtn = new JButton("FLAP (SPACE)");
+        flapBtn.setBackground(Color.YELLOW);
         flapBtn.setFont(new Font("Arial", Font.BOLD, 12));
 
-        JButton restartBtn = new JButton("RESTART"); // ito naman is para sa restart pag na game over ka
-        restartBtn.setBackground(Color.GREEN); // ito pre kulay green para parang go ulit
+        JButton restartBtn = new JButton("RESTART");
+        restartBtn.setBackground(Color.GREEN);
         restartBtn.setFont(new Font("Arial", Font.BOLD, 14));
 
-        JButton settingsBtn = new JButton("SETTINGS"); // ito naman is para sa settings na button
-        settingsBtn.setBackground(Color.CYAN); // ito pre kulay cyan para iba naman
+        JButton settingsBtn = new JButton("SETTINGS");
+        settingsBtn.setBackground(Color.CYAN);
         settingsBtn.setFont(new Font("Arial", Font.BOLD, 14));
 
-        // ngayon pre gagawin natin to para kahit button pinindot mo parang space din sa keyboard
-        // NEEDS NI SIR TO PRE PARA KAHIT WALANG KEYBOARD MAKAKALARO KA SA BUTTON LANG
+
+// space
         flapBtn.addActionListener(e -> {
-            flappyBird.requestFocus(); // ito pre para bumalik focus sa game
+            flappyBird.requestFocus(); // ibalik focus sa game, kasi napunta sa button yung focus
+            // pag binura koto dina gagana yung space at yung method na flap() sa FlappyBird.java
+            // kunwari pinindot yung SPACE key para isang method lang tinatawagan
             flappyBird.dispatchEvent(new KeyEvent(
-                flappyBird, 
-                KeyEvent.KEY_PRESSED, 
-                System.currentTimeMillis(), 
-                0, 
-                KeyEvent.VK_SPACE, 
-                KeyEvent.CHAR_UNDEFINED)); // ito naman is para kunwari pinindot mo yung space
+                    flappyBird, KeyEvent.KEY_PRESSED, System.currentTimeMillis(),
+                    0, KeyEvent.VK_SPACE, KeyEvent.CHAR_UNDEFINED));
+                    // so pag pinalitan koto ng ganto dina gagana yung space per
+                    // gagana yung nasa GUI
+
+                    // ito papalit dapat
+                    // flapBtn.addActionListener(e -> {
+                    // flappyBird.flap();
+                    // flappyBird.requestFocus();
         });
 
-        // ito naman pre para sa restart pag pinindot tatawagin yung restartGame dun sa flappybird
-        // NEEDS NI SIR TO PRE DATI SPACE PARA MAG RESTART NGAYON BUTTON NA LANG
+        // restart
         restartBtn.addActionListener(e -> {
-            flappyBird.restartGame(); // ngayon pre tatawagin natin yung method na nag rereset ng lahat
-            flappyBird.requestFocus(); // ito naman is para bumalik focus sa game para gumana pa din keyboard
+            flappyBird.restartGame(); // tawagin yung method na nagre-reset ng score, bird, pipes
+            flappyBird.requestFocus(); // ibalik focus sa game
         });
 
-        // ngayon pre pag pinindot yung settings button bubukas yung may normal hard insane
-        // NEEDS NI SIR TO PRE PARA GUI NA YUNG PAG PILI NG DIFFICULTY HINDI NA YUNG S AT 1 2 3
+        // SETTINGS BUTTON - GUI NA PAGPILI NG DIFFICULTY
         settingsBtn.addActionListener(e -> {
-            new SettingsDialog(frame, flappyBird); // ito pre bubukas yung settings na GUI
+            new SettingsDialog(frame, flappyBird); // buksan yung GUI ng Normal/Hard/Insane
         });
 
-        bottomPanel.add(flapBtn); // ngayon pre ilalagay natin yung flap button sa baba
-        bottomPanel.add(restartBtn); // ito naman is para malagay yung restart sa baba
-        bottomPanel.add(settingsBtn); // ito naman is para malagay yung settings sa baba
+        bottomPanel.add(flapBtn);
+        bottomPanel.add(restartBtn);
+        bottomPanel.add(settingsBtn);
 
-        // FINAL LAGAY NA SA FRAME - DITO YUNG FIX NG NASA BABA NA GAME
-        frame.add(flappyBird, BorderLayout.CENTER); // ito pre yung game sa gitna
-        frame.add(bottomPanel, BorderLayout.SOUTH); // ito naman is para sa baba yung may buttons
-        
-        // BAKIT KELANGAN TONG PACK PRE
-        // ngayon pre yung pack para ayusin yung sukat ng frame base sa laki ng game at nung bottomPanel
-        // pag di mo ginawa to putol yung game
+        // dito kona  ilagay yung game panel sa gitna at buttons sa baba
+        frame.add(flappyBird, BorderLayout.CENTER); // game sa gitna
+        frame.add(bottomPanel, BorderLayout.SOUTH); // buttons sa baba
+
+
+        // BAKIT DITO DAPAT YUNG PACK AT SETLOCATIONRELATIVETO?
+
+        // 1. frame.pack()  inaayos yung sukat ng frame base sa laki ng flappyBird + bottomPanel
+        //    Pag di mo to ginawa, putol o maliit yung game kasi di nasama sukat ng bottomPanel
+        // 2. setLocationRelativeTo(null) DAPAT PAGKATAPOS NG PACK
+        //    Kasi pag nilagay mo sa taas bago mag-pack, mali yung gitna.
+        //    Lalaki pa kasi frame pag nadagdag bottomPanel, kaya mapupunta sa baba yung game.
+        //    Pag dito nilagay pagkatapos ng pack, final na laki na ng frame kaya sakto gitna.
+
         frame.pack();
+        frame.setLocationRelativeTo(null); // para gitna talaga buong window
 
-        // BAKIT DITO KELANGAN ILAGAY YUNG setLocationRelativeTo
-        // NGAYON PRE DITO DAPAT ILAGAY PAGKATAPOS NG PACK
-        // KASI PAG NILAGAY MO SA TAAS BAGO MAG PACK MALI YUNG GITNA
-        // LALAKI PA KASI YUNG FRAME PAG NADAGDAG YUNG BOTTOM PANEL KAYA MAPUPUNTA SA BABA YUNG GAME
-        // PAG DITO MO NILAGAY PAGKATAPOS NG PACK SAKTO NA GITNA TALAGA KASI FINAL NA LAKI NA NG FRAME
-        frame.setLocationRelativeTo(null); // ito pre para gitna talaga yung buong window
-
-        flappyBird.requestFocus(); // ito naman is para pag bukas pa lang gumagana na agad yung keyboard
-        frame.setVisible(true); // ngayon pre ipapakita na natin yung window pag wala to di lalabas kahit anong gawin mo
+        flappyBird.requestFocus(); // para pag bukas pa lang gumagana na keyboard agad
+        // so pag binura ko tong dalawa na to mag blablack screen lang siya kahit tama yung code sa Login.java
+        frame.setVisible(true); // ipakita window, pag wala to di lalabas
     }
 }
